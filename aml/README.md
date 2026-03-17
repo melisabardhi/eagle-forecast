@@ -56,7 +56,7 @@ pip install azure-ai-ml azure-identity azure-storage-blob
 ```
 
 ### Verify Connection
-Edit `aml/setup_client.py` with your workspace details and run:
+Edit `aml/config.py` with your workspace details and run:
 ```bash
 python aml/setup_client.py
 ```
