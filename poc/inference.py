@@ -11,6 +11,7 @@ def prep_config(
     lead_time,
     version,
     checkpoint_path,
+    output_path=None,
 ):
     init_str = ic_timestamp.strftime("%Y-%m-%dT%H")
 
@@ -33,7 +34,7 @@ def prep_config(
             "adjust": "all",
             "min_distance_km": 6,
         },
-        "output_path": f"{version}/inference/{ic_timestamp.strftime('%Y/%m/%d/%H')}",
+        "output_path": f"{output_path or version}/inference/{ic_timestamp.strftime('%Y/%m/%d/%H')}",
     }
 
     return config
@@ -43,18 +44,19 @@ def run(
     version,
     lead_time,
     checkpoint_path,
+    output_path=None,
 ):
     ic_timestamp = utils.get_nrt_timestamp()
 
-    os.makedirs(
-        f"{version}/inference/{ic_timestamp.strftime('%Y/%m/%d/%H')}", exist_ok=True
-    )
+    final_output_path = output_path or f"{version}/inference/{ic_timestamp.strftime('%Y/%m/%d/%H')}"
+    os.makedirs(final_output_path, exist_ok=True)
 
     config = prep_config(
         version=version,
         ic_timestamp=ic_timestamp,
         lead_time=lead_time,
         checkpoint_path=checkpoint_path,
+        output_path=final_output_path,
     )
 
     eagle_inference(config)
@@ -65,6 +67,7 @@ if __name__ == "__main__":
     parser.add_argument("--config")
     parser.add_argument("--checkpoint_path", help="Override checkpoint path from config")
     parser.add_argument("--version", help="Override version from config")
+    parser.add_argument("--output_path", help="Override output path")
     args = parser.parse_args()
 
     if not args.config:
@@ -77,4 +80,4 @@ if __name__ == "__main__":
     version = args.version if args.version else config["version"]
     checkpoint_path = args.checkpoint_path if args.checkpoint_path else config["checkpoint_path"]
 
-    run(version=version, lead_time=lead_time, checkpoint_path=checkpoint_path)
+    run(version=version, lead_time=lead_time, checkpoint_path=checkpoint_path, output_path=args.output_path)

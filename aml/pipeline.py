@@ -58,9 +58,12 @@ def nested_eagle_pipeline():
     inference_step = command(
         code="./poc",
         command=(
-            "python inference.py --config nested_eagle.yaml --version ${{inputs.preproc_output}} --output_path ${{outputs.forecast_results}}"
+            "python inference.py --config nested_eagle.yaml --version ${{inputs.preproc_output}} --output_path ${{outputs.forecast_results}} --checkpoint_path ${{inputs.model_checkpoint}}"
         ),
-        inputs={"preproc_output": Input(type="uri_folder")},
+        inputs={
+            "preproc_output": Input(type="uri_folder"), 
+            "model_checkpoint": Input(type="custom_model")
+        },
         outputs={"forecast_results": Output(type="uri_folder")},
         environment=f"{ENVIRONMENT_NAME}:1",
         compute=GPU_CLUSTER_NAME,
@@ -123,6 +126,12 @@ def main():
         "--schedule",
         action="store_true",
         help="Create the 6h recurring schedule (instead of a single test run)",
+    )
+    parser.add_argument(
+        "--checkpoint_path",
+        type=str,
+        default="azureml://models/nested-eagle-model/versions/1",
+        help="Path to the registered model checkpoint (default: azureml://models/nested-eagle-model/versions/1)",
     )
     args = parser.parse_args()
 
