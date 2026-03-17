@@ -63,6 +63,8 @@ def run(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--config")
+    parser.add_argument("--checkpoint_path", help="Override checkpoint path from config")
+    parser.add_argument("--version", help="Override version from config")
     args = parser.parse_args()
 
     if not args.config:
@@ -72,7 +74,7 @@ if __name__ == "__main__":
     config = utils.load_config(args.config)
 
     lead_time = config["lead_time"]
-    version = config["version"]
-    checkpoint_path = config["checkpoint_path"]
+    version = args.version if args.version else config["version"]
+    checkpoint_path = args.checkpoint_path if args.checkpoint_path else config["checkpoint_path"]
 
     run(version=version, lead_time=lead_time, checkpoint_path=checkpoint_path)
