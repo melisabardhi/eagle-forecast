@@ -44,7 +44,8 @@ def nested_eagle_pipeline():
     # Downloads GFS + HRRR, regrids HRRR to 6km, writes Zarr
     preproc_step = command(
         code="./poc",
-        command="python preproc.py --config nested_eagle.yaml",
+        command="python preproc.py --config nested_eagle.yaml --version ${{outputs.preproc_output}}",
+        outputs={"preproc_output": Output(type="uri_folder")},
         environment=f"{ENVIRONMENT_NAME}:1",
         compute=CPU_CLUSTER_NAME,
         display_name="preproc",
@@ -57,13 +58,16 @@ def nested_eagle_pipeline():
     inference_step = command(
         code="./poc",
         command=(
-            "python inference.py --config nested_eagle.yaml"
+            "python inference.py --config nested_eagle.yaml --version ${{inputs.preproc_output}} --output_path ${{outputs.forecast_results}}"
         ),
+        inputs={"preproc_output": Input(type="uri_folder")},
+        outputs={"forecast_results": Output(type="uri_folder")},
         environment=f"{ENVIRONMENT_NAME}:1",
         compute=GPU_CLUSTER_NAME,
         display_name="inference-and-upload",
         description="Run 240h forecast, write NetCDF, upload to output blob",
     )
+    inference_step.inputs.preproc_output = preproc_step.outputs.preproc_output
     inference_step.after(preproc_step)
 
     return {}
