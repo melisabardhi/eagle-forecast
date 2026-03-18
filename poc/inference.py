@@ -5,6 +5,7 @@ from eagle.tools.inference import main as eagle_inference
 
 import utils
 import stac_item
+import upload
 
 
 def prep_config(
@@ -45,6 +46,8 @@ def run(
     lead_time,
     checkpoint_path,
     output_storage_url=None,
+    output_storage_account=None,
+    output_container=None,
 ):
     ic_timestamp = utils.get_nrt_timestamp()
 
@@ -65,6 +68,15 @@ def run(
     if output_storage_url:
         stac_item.write_stac_item(ic_timestamp, version, output_storage_url)
 
+    # Upload forecast + STAC to blob storage
+    if output_storage_account and output_container:
+        print("Uploading forecast + STAC to blob storage...")
+        upload.upload_forecast(
+            version=version,
+            storage_account=output_storage_account,
+            container=output_container,
+        )
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -81,10 +93,14 @@ if __name__ == "__main__":
     version = config["version"]
     checkpoint_path = config["checkpoint_path"]
     output_storage_url = config.get("output_storage_url")
+    output_storage_account = config.get("output_storage_account")
+    output_container = config.get("output_container", "nested-eagle-forecasts")
 
     run(
         version=version,
         lead_time=lead_time,
         checkpoint_path=checkpoint_path,
         output_storage_url=output_storage_url,
+        output_storage_account=output_storage_account,
+        output_container=output_container,
     )

@@ -63,7 +63,7 @@ def nested_eagle_pipeline():
         environment=f"{ENVIRONMENT_NAME}:1",
         compute=GPU_CLUSTER_NAME,
         display_name="inference-and-upload",
-        description="Run 240h forecast, write NetCDF, generate STAC Item, upload to output blob",
+        description="Run 240h forecast, write NetCDF, generate STAC Item, upload all to output blob",
     )
     inference_step.after(preproc_step)
 
