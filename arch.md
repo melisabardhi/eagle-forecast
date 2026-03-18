@@ -111,7 +111,7 @@ flowchart TB
 | Cluster | SKU | vCPUs | RAM | GPU | Used By | Cost/hr |
 |---|---|---|---|---|---|---|
 | `eagle-cpu` | Standard_D16s_v5 | 16 | 64 GB | — | Step 1 (preproc) + Step 3 (upload) | ~$0.77 |
-| `eagle-gpu` | NC40ads_H100_v5 | 40 | 320 GB | H100 80GB NVL | Step 2 (inference) | ~$6.98 |
+| `eagle-gpu-h100` | NC40ads_H100_v5 | 40 | 320 GB | H100 80GB NVL | Step 2 (inference) | ~$6.98 |
 
 **Pipeline: `nested-eagle-nrt` (3 steps)**
 
@@ -206,4 +206,4 @@ Time: 14:30 UTC
 | **Per day (4 runs)** | | ~2.3 hrs | ~$5.92 |
 | **Per month** | | ~70 hrs | ~$178 |
 
-*H100 is faster than A100 — inference may complete in ~10 min vs ~15 min. Cost-optimization: test down to A10 24GB (~$0.55/run, ~$66/month) if peak VRAM < 20GB.*
+*H100 inference completes in ~10 min. Compute name: `eagle-gpu-h100`.*

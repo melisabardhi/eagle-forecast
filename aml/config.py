@@ -26,7 +26,7 @@ OUTPUT_STORAGE_URL = f"https://{OUTPUT_STORAGE_ACCOUNT}.blob.core.windows.net/{O
 
 # Compute cluster names
 CPU_CLUSTER_NAME = "eagle-cpu"
-GPU_CLUSTER_NAME = "eagle-gpu"
+GPU_CLUSTER_NAME = "eagle-gpu-h100"
 
 # Environment name
 ENVIRONMENT_NAME = "eagle-nrt"

@@ -23,7 +23,7 @@ Every 6 hours (00Z, 06Z, 12Z, 18Z)
 ## Prerequisites
 
 - Azure subscription with an AML workspace
-- GPU quota: H100 80GB (`Standard_NC40ads_H100_v5`) or A100 80GB (`Standard_NC24ads_A100_v4`)
+- GPU quota: H100 80GB (`Standard_NC40ads_H100_v5`) — 40 cores minimum
 - Azure CLI with ML extension (`az extension add -n ml`)
 - Python 3.12+ with `azure-ai-ml` and `azure-identity` packages
 - Model checkpoint (`inference-last.ckpt`)
@@ -70,9 +70,8 @@ az ml compute list-usage \
   -o table
 ```
 
-Check quota for both GPU families (customer has access to both):
+Check quota for the H100 GPU family:
 - `NC40adsH100v5` — at least 40 cores for H100 80GB
-- `NC24adsA100v4` — at least 24 cores for A100 80GB (cost-optimization option)
 
 If quota needs increase, request via Azure Portal → Subscriptions → Usage + quotas (takes 1-5 business days).
 
@@ -163,7 +162,7 @@ ml_client.compute.begin_create_or_update(cpu_cluster)
 
 # GPU cluster for inference (scale-to-zero)
 gpu_cluster = AmlCompute(
-    name="eagle-gpu",
+    name="eagle-gpu-h100",
     size="Standard_NC40ads_H100_v5",
     min_instances=0,
     max_instances=1,
@@ -213,14 +212,14 @@ inference_job = command(
     code="./poc",
     command="python inference.py",
     environment="eagle-nrt:1",
-    compute="eagle-gpu",
+    compute="eagle-gpu-h100",
     display_name="eagle-inference-test",
     experiment_name="nested-eagle-nrt",
 )
 ml_client.jobs.create_or_update(inference_job)
 ```
 
-Monitor peak VRAM usage during the run. If < 20GB, consider switching to A10 24GB for cost savings.
+Monitor peak VRAM usage during the run to confirm H100 headroom.
 
 ## Step 9: Build 2-Step Pipeline
 
