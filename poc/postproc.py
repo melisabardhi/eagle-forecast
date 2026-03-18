@@ -130,6 +130,7 @@ def _write_subset(ds, indices, output_path, global_attrs):
 def postprocess_forecast(
     version: str,
     grid_file: str = "config/hrrr_06km.nc",
+    ic_timestamp=None,
 ):
     """
     Split raw forecast into global.nc and conus.nc.
@@ -140,8 +141,11 @@ def postprocess_forecast(
         Model version string, used for directory paths.
     grid_file : str
         Path to the HRRR 6km grid file (used to determine split point).
+    ic_timestamp : pd.Timestamp, optional
+        Forecast init time. If None, calculated from current time.
     """
-    ic_timestamp = utils.get_nrt_timestamp()
+    if ic_timestamp is None:
+        ic_timestamp = utils.get_nrt_timestamp()
     folder = ic_timestamp.strftime("%Y/%m/%d/%H")
 
     raw_path = f"{version}/inference/{folder}/forecast.nc"

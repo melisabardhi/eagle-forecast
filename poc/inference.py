@@ -68,7 +68,7 @@ def run(
 
     # Post-process: split raw forecast into global.nc + conus.nc
     print("Post-processing: splitting into global + CONUS...")
-    postproc.postprocess_forecast(version=version, grid_file=grid_file)
+    postproc.postprocess_forecast(version=version, grid_file=grid_file, ic_timestamp=ic_timestamp)
 
     # Generate STAC Items for MPC Pro GeoCatalog ingestion
     # Writes to {version}/stac/items/{folder}/ — separate from data files
@@ -82,6 +82,7 @@ def run(
             version=version,
             storage_account=output_storage_account,
             container=output_container,
+            ic_timestamp=ic_timestamp,
         )
 
 

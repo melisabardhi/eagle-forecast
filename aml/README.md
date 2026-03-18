@@ -12,12 +12,13 @@ Every 6 hours (00Z, 06Z, 12Z, 18Z)
 │   ├── Download GFS initial conditions → Zarr
 │   └── Download HRRR initial conditions → regrid to 6km → Zarr
 │
-└── Step 2: GPU Command Job (inference + upload)
+└── Step 2: GPU Command Job (inference + postprocess + upload)
     ├── Load checkpoint from AML Model Registry
     ├── Load initial conditions (GFS global + HRRR cutout)
-    ├── Run 40 autoregressive steps → 240h forecast
-    ├── Write NetCDF output
-    └── Upload to output blob container (customer-owned, MPC Pro gets read access)
+    ├── Run 40 autoregressive steps → 240h forecast → forecast.nc
+    ├── Post-process: split into global.nc (GFS 0.25°) + conus.nc (HRRR 6km)
+    ├── Generate STAC Items (raw.json + postprocessed.json)
+    └── Upload data + STAC to output blob → MPC Pro GeoCatalog ingests
 ```
 
 ## Prerequisites

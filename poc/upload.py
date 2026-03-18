@@ -58,6 +58,7 @@ def upload_forecast(
     version: str,
     storage_account: str,
     container: str,
+    ic_timestamp=None,
 ):
     """
     Upload all forecast outputs + STAC metadata to blob storage.
@@ -69,7 +70,8 @@ def upload_forecast(
       {version}/stac/items/{folder}/raw.json            (STAC)
       {version}/stac/items/{folder}/postprocessed.json  (STAC)
     """
-    ic_timestamp = utils.get_nrt_timestamp()
+    if ic_timestamp is None:
+        ic_timestamp = utils.get_nrt_timestamp()
     folder = ic_timestamp.strftime("%Y/%m/%d/%H")
 
     container_client = get_blob_container_client(storage_account, container)
