@@ -3,7 +3,7 @@
   "stac_version": "1.0.0",
   "id": "noaa-nested-eagle",
   "title": "NOAA Nested-EAGLE Weather Forecasts",
-  "description": "AI weather forecasts from the Nested-EAGLE model (ECMWF Anemoi framework). Produces 240-hour (10-day) forecasts every 6 hours by nesting a high-resolution HRRR grid (6km, CONUS) inside a global GFS grid (0.25°).",
+  "description": "AI weather forecasts from the Nested-EAGLE model (ECMWF Anemoi framework). Produces 240-hour (10-day) forecasts every 6 hours by nesting a high-resolution HRRR grid (6km, CONUS) inside a global GFS grid (0.25°). Each forecast cycle produces both a raw (full nested grid) output and post-processed outputs split into global and CONUS regional files.",
   "license": "proprietary",
   "keywords": [
     "weather",
@@ -37,6 +37,7 @@
     }
   },
   "summaries": {
+    "nested-eagle:output_type": ["raw", "postprocessed"],
     "nested-eagle:variables": [
       "geopotential",
       "temperature",
@@ -58,6 +59,26 @@
     "nested-eagle:conus_resolution_km": [6],
     "forecast:horizon": ["PT240H"],
     "forecast:step_hours": [6]
+  },
+  "item_assets": {
+    "forecast": {
+      "type": "application/netcdf",
+      "title": "Raw Forecast (full nested grid)",
+      "roles": ["data"],
+      "description": "Full model output with nested global + CONUS grid"
+    },
+    "global": {
+      "type": "application/netcdf",
+      "title": "Global Forecast (GFS grid, 0.25°)",
+      "roles": ["data"],
+      "description": "Post-processed global forecast on GFS 0.25° grid"
+    },
+    "conus": {
+      "type": "application/netcdf",
+      "title": "CONUS Forecast (HRRR grid, 6km)",
+      "roles": ["data"],
+      "description": "Post-processed CONUS regional forecast on HRRR 6km grid"
+    }
   },
   "links": [
     {

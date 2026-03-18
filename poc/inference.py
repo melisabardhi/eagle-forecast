@@ -64,9 +64,10 @@ def run(
 
     eagle_inference(config)
 
-    # Generate STAC Item for MPC Pro ingestion
+    # Generate STAC Items for MPC Pro GeoCatalog ingestion
+    # Writes to {version}/stac/items/{folder}/ — separate from data files
     if output_storage_url:
-        stac_item.write_stac_item(ic_timestamp, version, output_storage_url)
+        stac_item.write_stac_items(ic_timestamp, version, output_storage_url)
 
     # Upload forecast + STAC to blob storage
     if output_storage_account and output_container:

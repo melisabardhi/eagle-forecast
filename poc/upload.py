@@ -1,9 +1,17 @@
 """
 Upload forecast outputs and STAC metadata to Azure Blob Storage.
 
-Uploads the forecast NetCDF, STAC Item JSON, and (on first run) the
-STAC Collection JSON to the output blob container so MPC Pro can
-discover and ingest them.
+Uploads both raw and post-processed forecast NetCDFs, STAC Item JSONs,
+and the STAC Collection JSON to the output blob container so MPC Pro's
+GeoCatalog can discover and ingest them.
+
+Blob layout:
+  data/raw/{YYYY}/{MM}/{DD}/{HH}/forecast.nc
+  data/postprocessed/{YYYY}/{MM}/{DD}/{HH}/global.nc
+  data/postprocessed/{YYYY}/{MM}/{DD}/{HH}/conus.nc
+  stac/collection.json
+  stac/items/{YYYY}/{MM}/{DD}/{HH}/raw.json
+  stac/items/{YYYY}/{MM}/{DD}/{HH}/postprocessed.json
 
 Usage (standalone):
   python upload.py --config nested_eagle.yaml
@@ -14,7 +22,6 @@ Programmatic:
 """
 
 import argparse
-import json
 import os
 import sys
 
@@ -39,51 +46,71 @@ def upload_file(container_client, local_path: str, blob_path: str):
         container_client.upload_blob(name=blob_path, data=f, overwrite=True)
 
 
+def _upload_if_exists(container_client, local_path: str, blob_path: str):
+    """Upload a file if it exists locally, otherwise warn."""
+    if os.path.exists(local_path):
+        upload_file(container_client, local_path, blob_path)
+    else:
+        print(f"  WARNING: {local_path} not found, skipping")
+
+
 def upload_forecast(
     version: str,
     storage_account: str,
     container: str,
 ):
     """
-    Upload forecast NetCDF + STAC Item + Collection to blob storage.
+    Upload all forecast outputs + STAC metadata to blob storage.
 
-    Expects the following local files (produced by inference.py + stac_item.py):
-      {version}/inference/{YYYY}/{MM}/{DD}/{HH}/forecast.nc
-      {version}/inference/{YYYY}/{MM}/{DD}/{HH}/stac_item.json
-
-    Uploads to blob paths:
-      v1/{YYYY}/{MM}/{DD}/{HH}/forecast.nc
-      v1/{YYYY}/{MM}/{DD}/{HH}/stac_item.json
-      v1/collection.json   (uploaded once, overwritten each run)
+    Expects local files produced by inference.py + stac_item.py:
+      {version}/inference/{folder}/forecast.nc          (raw)
+      {version}/postprocessed/{folder}/global.nc        (post-processed)
+      {version}/postprocessed/{folder}/conus.nc         (post-processed)
+      {version}/stac/items/{folder}/raw.json            (STAC)
+      {version}/stac/items/{folder}/postprocessed.json  (STAC)
     """
     ic_timestamp = utils.get_nrt_timestamp()
     folder = ic_timestamp.strftime("%Y/%m/%d/%H")
 
-    local_dir = f"{version}/inference/{folder}"
-    blob_prefix = f"v1/{folder}"
-
     container_client = get_blob_container_client(storage_account, container)
 
-    # Upload forecast NetCDF
-    nc_local = os.path.join(local_dir, "forecast.nc")
-    if os.path.exists(nc_local):
-        upload_file(container_client, nc_local, f"{blob_prefix}/forecast.nc")
-    else:
-        print(f"  WARNING: {nc_local} not found, skipping NetCDF upload")
+    # --- Data files ---
+    # Raw forecast
+    raw_local = f"{version}/inference/{folder}/forecast.nc"
+    _upload_if_exists(container_client, raw_local, f"data/raw/{folder}/forecast.nc")
 
-    # Upload STAC Item JSON
-    stac_local = os.path.join(local_dir, "stac_item.json")
-    if os.path.exists(stac_local):
-        upload_file(container_client, stac_local, f"{blob_prefix}/stac_item.json")
-    else:
-        print(f"  WARNING: {stac_local} not found, skipping STAC Item upload")
+    # Post-processed: global + CONUS
+    pp_local_dir = f"{version}/postprocessed/{folder}"
+    _upload_if_exists(
+        container_client,
+        os.path.join(pp_local_dir, "global.nc"),
+        f"data/postprocessed/{folder}/global.nc",
+    )
+    _upload_if_exists(
+        container_client,
+        os.path.join(pp_local_dir, "conus.nc"),
+        f"data/postprocessed/{folder}/conus.nc",
+    )
 
-    # Upload STAC Collection (always overwrite — keeps it current)
+    # --- STAC metadata (separate folder for GeoCatalog ingestion) ---
+    stac_local_dir = f"{version}/stac/items/{folder}"
+    _upload_if_exists(
+        container_client,
+        os.path.join(stac_local_dir, "raw.json"),
+        f"stac/items/{folder}/raw.json",
+    )
+    _upload_if_exists(
+        container_client,
+        os.path.join(stac_local_dir, "postprocessed.json"),
+        f"stac/items/{folder}/postprocessed.json",
+    )
+
+    # STAC Collection (always overwrite to keep current)
     collection_local = os.path.join(os.path.dirname(__file__), "stac_collection.json")
     if os.path.exists(collection_local):
-        upload_file(container_client, collection_local, "v1/collection.json")
+        upload_file(container_client, collection_local, "stac/collection.json")
 
-    print(f"Upload complete: {blob_prefix}/")
+    print(f"Upload complete for forecast cycle {folder}")
 
 
 if __name__ == "__main__":
