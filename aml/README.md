@@ -57,7 +57,7 @@ pip install azure-ai-ml azure-identity azure-storage-blob
 ```
 
 ### Verify Connection
-Edit `aml/setup_client.py` with your workspace details and run:
+Edit `aml/config.py` with your workspace details and run:
 ```bash
 python aml/setup_client.py
 ```
@@ -118,17 +118,36 @@ az role assignment create \
   --scope /subscriptions/<SUB>/resourceGroups/<RG>/providers/Microsoft.Storage/storageAccounts/<FORECAST_STORAGE_ACCOUNT>
 ```
 
-## Step 3: Register Checkpoint
+## Step 3: Generate Static Grid File (One-Time)
+
+```bash
+python poc/config/hrrr_6km.py
+```
+
+Upload `hrrr_06km.nc` to the checkpoint datastore using the Azure Portal OR the Azure CLI. 
+
+```bash
+az storage blob upload \
+  --account-name <storage-account-name> \
+  --container-name <container-name> \
+  --name hrrr_06km.nc \
+  --file ./hrrr_06km.nc
+```
+
+## Step 4: Register Checkpoint
 
 Create a datastore pointing to the checkpoint storage, then register the model:
 
 ```python
 from azure.ai.ml.entities import Model
 
+# Path to model assets that will be registered with the model
+MODEL_PATH="azureml://datastores/<CHECKPOINT_DATASTORE>/paths/poc/inference-last.ckpt"
+
 model = Model(
     name="nested-eagle",
     version="1",
-    path="azureml://datastores/<CHECKPOINT_DATASTORE>/paths/poc/inference-last.ckpt",
+    path=MODEL_PATH, 
     type="custom_model",
     description="Nested-EAGLE NRT weather forecast model",
     tags={"framework": "anemoi-inference", "grid": "nested-cutout-6km", "lead_time": "240h"},
@@ -137,14 +156,6 @@ ml_client.models.create_or_update(model)
 ```
 
 > **Portal alternative:** AML Studio → Models → Register → From datastore. Select the checkpoint datastore and browse to the `.ckpt` file.
-
-## Step 4: Generate Static Grid File (One-Time)
-
-```bash
-python poc/config/hrrr_6km.py
-```
-
-Upload `hrrr_06km.nc` to the checkpoint datastore.
 
 ## Step 5: Provision Compute Clusters
 
@@ -197,7 +208,7 @@ from azure.ai.ml import command
 
 preproc_job = command(
     code="./poc",
-    command="python preproc.py",
+    command="python preproc.py --config nested_eagle.yaml",
     environment="eagle-nrt:1",
     compute="eagle-cpu",
     display_name="eagle-preproc-test",
@@ -224,13 +235,10 @@ Monitor peak VRAM usage during the run to confirm H100 headroom.
 
 ## Step 9: Build 2-Step Pipeline
 
-```python
-from azure.ai.ml import dsl
+Build 2 step pipeline. Specify the registered model created in the previous steps. 
 
-@dsl.pipeline(name="nested-eagle-nrt")
-def nested_eagle_pipeline():
-    step1 = preprocess_step()
-    step2 = inference_and_upload_step(ics=step1.outputs.initial_conditions)
+```bash
+python pipeline.py --checkpoint_path "azureml://models/nested-eagle-model/versions/1"
 ```
 
 ## Step 10: Enable 6h Schedule

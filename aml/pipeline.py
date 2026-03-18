@@ -45,7 +45,8 @@ def nested_eagle_pipeline():
     # Downloads GFS + HRRR, regrids HRRR to 6km, writes Zarr
     preproc_step = command(
         code="./poc",
-        command="python preproc.py --config nested_eagle.yaml",
+        command="python preproc.py --config nested_eagle.yaml --version ${{outputs.preproc_output}}",
+        outputs={"preproc_output": Output(type="uri_folder")},
         environment=f"{ENVIRONMENT_NAME}:1",
         compute=CPU_CLUSTER_NAME,
         display_name="preproc",
@@ -58,13 +59,19 @@ def nested_eagle_pipeline():
     inference_step = command(
         code="./poc",
         command=(
-            "python inference.py --config nested_eagle.yaml"
+            "python inference.py --config nested_eagle.yaml --version ${{inputs.preproc_output}} --output_path ${{outputs.forecast_results}} --checkpoint_path ${{inputs.model_checkpoint}}"
         ),
+        inputs={
+            "preproc_output": Input(type="uri_folder"), 
+            "model_checkpoint": Input(type="custom_model")
+        },
+        outputs={"forecast_results": Output(type="uri_folder")},
         environment=f"{ENVIRONMENT_NAME}:1",
         compute=GPU_CLUSTER_NAME,
         display_name="inference-and-upload",
         description="Run 240h forecast, write NetCDF, generate STAC Item, upload all to output blob",
     )
+    inference_step.inputs.preproc_output = preproc_step.outputs.preproc_output
     inference_step.after(preproc_step)
 
     return {}
@@ -120,6 +127,12 @@ def main():
         "--schedule",
         action="store_true",
         help="Create the 6h recurring schedule (instead of a single test run)",
+    )
+    parser.add_argument(
+        "--checkpoint_path",
+        type=str,
+        default="azureml://models/nested-eagle-model/versions/1",
+        help="Path to the registered model checkpoint (default: azureml://models/nested-eagle-model/versions/1)",
     )
     args = parser.parse_args()
 
