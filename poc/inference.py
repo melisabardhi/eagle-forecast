@@ -6,6 +6,7 @@ from eagle.tools.inference import main as eagle_inference
 import utils
 import stac_item
 import upload
+import postproc
 
 
 def prep_config(
@@ -48,6 +49,7 @@ def run(
     output_storage_url=None,
     output_storage_account=None,
     output_container=None,
+    grid_file="config/hrrr_06km.nc",
 ):
     ic_timestamp = utils.get_nrt_timestamp()
 
@@ -63,6 +65,10 @@ def run(
     )
 
     eagle_inference(config)
+
+    # Post-process: split raw forecast into global.nc + conus.nc
+    print("Post-processing: splitting into global + CONUS...")
+    postproc.postprocess_forecast(version=version, grid_file=grid_file)
 
     # Generate STAC Items for MPC Pro GeoCatalog ingestion
     # Writes to {version}/stac/items/{folder}/ — separate from data files
@@ -96,6 +102,7 @@ if __name__ == "__main__":
     output_storage_url = config.get("output_storage_url")
     output_storage_account = config.get("output_storage_account")
     output_container = config.get("output_container", "nested-eagle-forecasts")
+    grid_file = config.get("grid_file", "config/hrrr_06km.nc")
 
     run(
         version=version,
@@ -104,4 +111,5 @@ if __name__ == "__main__":
         output_storage_url=output_storage_url,
         output_storage_account=output_storage_account,
         output_container=output_container,
+        grid_file=grid_file,
     )

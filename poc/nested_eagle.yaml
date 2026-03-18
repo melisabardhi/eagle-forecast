@@ -2,6 +2,7 @@ lead_time: 240
 version: "nested_eagle"
 checkpoint_path: "/path/to/checkpoint"
 multistep_input: False
+grid_file: "config/hrrr_06km.nc"
 output_storage_url: "https://STORAGE_ACCOUNT.blob.core.windows.net/nested-eagle-forecasts"
 output_storage_account: "STORAGE_ACCOUNT"
 output_container: "nested-eagle-forecasts"
