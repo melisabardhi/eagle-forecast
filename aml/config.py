@@ -22,6 +22,7 @@ CHECKPOINT_PATH = "poc"
 # Output storage (created in Step 2)
 OUTPUT_STORAGE_ACCOUNT = "<FORECAST_STORAGE_ACCOUNT>"
 OUTPUT_CONTAINER = "nested-eagle-forecasts"
+OUTPUT_STORAGE_URL = f"https://{OUTPUT_STORAGE_ACCOUNT}.blob.core.windows.net/{OUTPUT_CONTAINER}"
 
 # Compute cluster names
 CPU_CLUSTER_NAME = "eagle-cpu"

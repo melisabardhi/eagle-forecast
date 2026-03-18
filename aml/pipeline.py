@@ -27,6 +27,7 @@ from config import (
     ENVIRONMENT_NAME,
     OUTPUT_STORAGE_ACCOUNT,
     OUTPUT_CONTAINER,
+    OUTPUT_STORAGE_URL,
 )
 
 from azure.ai.ml import command, dsl, Input, Output
@@ -51,8 +52,8 @@ def nested_eagle_pipeline():
         description="Download GFS + HRRR, regrid HRRR to 6km, write Zarr",
     )
 
-    # Step 2: Inference + Upload (GPU)
-    # Loads checkpoint, runs forecast, writes NetCDF, uploads to blob
+    # Step 2: Inference + Upload + STAC (GPU)
+    # Loads checkpoint, runs forecast, writes NetCDF, generates STAC Item, uploads to blob
     # Must wait for preprocessing to finish
     inference_step = command(
         code="./poc",
@@ -62,7 +63,7 @@ def nested_eagle_pipeline():
         environment=f"{ENVIRONMENT_NAME}:1",
         compute=GPU_CLUSTER_NAME,
         display_name="inference-and-upload",
-        description="Run 240h forecast, write NetCDF, upload to output blob",
+        description="Run 240h forecast, write NetCDF, generate STAC Item, upload to output blob",
     )
     inference_step.after(preproc_step)
 

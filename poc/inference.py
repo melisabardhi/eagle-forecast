@@ -4,6 +4,7 @@ import sys
 from eagle.tools.inference import main as eagle_inference
 
 import utils
+import stac_item
 
 
 def prep_config(
@@ -43,6 +44,7 @@ def run(
     version,
     lead_time,
     checkpoint_path,
+    output_storage_url=None,
 ):
     ic_timestamp = utils.get_nrt_timestamp()
 
@@ -59,6 +61,10 @@ def run(
 
     eagle_inference(config)
 
+    # Generate STAC Item for MPC Pro ingestion
+    if output_storage_url:
+        stac_item.write_stac_item(ic_timestamp, version, output_storage_url)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -74,5 +80,11 @@ if __name__ == "__main__":
     lead_time = config["lead_time"]
     version = config["version"]
     checkpoint_path = config["checkpoint_path"]
+    output_storage_url = config.get("output_storage_url")
 
-    run(version=version, lead_time=lead_time, checkpoint_path=checkpoint_path)
+    run(
+        version=version,
+        lead_time=lead_time,
+        checkpoint_path=checkpoint_path,
+        output_storage_url=output_storage_url,
+    )

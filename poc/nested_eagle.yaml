@@ -2,3 +2,4 @@ lead_time: 240
 version: "nested_eagle"
 checkpoint_path: "/path/to/checkpoint"
 multistep_input: False
+output_storage_url: "https://STORAGE_ACCOUNT.blob.core.windows.net/nested-eagle-forecasts"
