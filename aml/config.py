@@ -24,6 +24,10 @@ OUTPUT_STORAGE_ACCOUNT = "<FORECAST_STORAGE_ACCOUNT>"
 OUTPUT_CONTAINER = "nested-eagle-forecasts"
 OUTPUT_STORAGE_URL = f"https://{OUTPUT_STORAGE_ACCOUNT}.blob.core.windows.net/{OUTPUT_CONTAINER}"
 
+# Data retention: 90 days during experimental phase (no PC access).
+# Once data flows to Planetary Computer, reduce to 7 days.
+DATA_RETENTION_DAYS = 90
+
 # Compute cluster names
 CPU_CLUSTER_NAME = "eagle-cpu"
 GPU_CLUSTER_NAME = "eagle-gpu-h100"

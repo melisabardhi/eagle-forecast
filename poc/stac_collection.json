@@ -4,7 +4,7 @@
   "id": "noaa-nested-eagle",
   "title": "NOAA Nested-EAGLE Weather Forecasts",
   "description": "AI weather forecasts from the Nested-EAGLE model (ECMWF Anemoi framework). Produces 240-hour (10-day) forecasts every 6 hours by nesting a high-resolution HRRR grid (6km, CONUS) inside a global GFS grid (0.25°). Each forecast cycle produces both a raw (full nested grid) output and post-processed outputs split into global and CONUS regional files.",
-  "license": "proprietary",
+  "license": "CC-BY-4.0",
   "keywords": [
     "weather",
     "forecast",
