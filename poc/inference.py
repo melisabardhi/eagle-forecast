@@ -7,6 +7,7 @@ import utils
 import stac_item
 import upload
 import postproc
+import ingest
 
 
 def prep_config(
@@ -52,6 +53,8 @@ def run(
     output_storage_account=None,
     output_container=None,
     grid_file="config/hrrr_06km.nc",
+    geocatalog_url=None,
+    geocatalog_collection_id="noaa-nested-eagle",
 ):
     ic_timestamp = utils.get_nrt_timestamp()
 
@@ -87,6 +90,18 @@ def run(
             ic_timestamp=ic_timestamp,
         )
 
+    # Ingest STAC items into GeoCatalog (Track 2 — public distribution)
+    # Skipped if geocatalog_url is not set (Track 1 internal evaluation)
+    if geocatalog_url and output_storage_url:
+        print("Ingesting STAC items into GeoCatalog...")
+        ingest.ingest_stac_items(
+            ic_timestamp=ic_timestamp,
+            version=version,
+            geocatalog_url=geocatalog_url,
+            collection_id=geocatalog_collection_id,
+            output_storage_url=output_storage_url,
+        )
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -109,6 +124,8 @@ if __name__ == "__main__":
     output_storage_account = config.get("output_storage_account")
     output_container = config.get("output_container", "nested-eagle-forecasts")
     grid_file = config.get("grid_file", "config/hrrr_06km.nc")
+    geocatalog_url = config.get("geocat_url", "") or None
+    geocatalog_collection_id = config.get("geocat_collection_id", "noaa-nested-eagle")
 
     run(
         version=version,
@@ -119,4 +136,6 @@ if __name__ == "__main__":
         output_storage_account=output_storage_account,
         output_container=output_container,
         grid_file=grid_file,
+        geocatalog_url=geocatalog_url,
+        geocatalog_collection_id=geocatalog_collection_id,
     )

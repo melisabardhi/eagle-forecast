@@ -28,6 +28,12 @@ OUTPUT_STORAGE_URL = f"https://{OUTPUT_STORAGE_ACCOUNT}.blob.core.windows.net/{O
 # Once data flows to Planetary Computer, reduce to 7 days.
 DATA_RETENTION_DAYS = 90
 
+# GeoCatalog (MPC Pro) — for public distribution via Planetary Computer
+# Fill in after creating the GeoCatalog instance in the NOAA subscription.
+# Leave empty to skip ingestion (Track 1 only, internal evaluation).
+GEOCATALOG_URL = "<GEOCATALOG_URL>"  # e.g. https://<name>.<id>.<region>.geocatalog.spatio.azure.com
+GEOCATALOG_COLLECTION_ID = "noaa-nested-eagle"
+
 # Compute cluster names
 CPU_CLUSTER_NAME = "eagle-cpu"
 GPU_CLUSTER_NAME = "eagle-gpu-h100"
