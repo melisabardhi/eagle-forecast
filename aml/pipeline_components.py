@@ -17,6 +17,7 @@ from config import (
     ENVIRONMENT_NAME,
     OUTPUT_STORAGE_ACCOUNT,
     OUTPUT_CONTAINER,
+    OUTPUT_STORAGE_URL,
 )
 
 from azure.ai.ml import dsl, Input, Output
@@ -151,11 +152,11 @@ def postproc_component(
         raise RuntimeError(f"Upload failed: {result.stderr}")
     
     # Step 4: Generate STAC items and ingest into GeoCatalog (references uploaded URLs)
-    # Note: Add geocatalog_url to your nested_eagle.yaml config file
     stac_cmd = [
         "python", "stac_ingestion.py",
-        "--config", "nested_eagle.yaml",
-        "--geocatalog-url", "https://your-geocatalog.com"  # TODO: Configure this
+        "--version", str(final_outputs),  # Use output path as version identifier
+        "--output-storage-url", OUTPUT_STORAGE_URL,
+        "--geocatalog-url", "https://your-geocatalog.com"  # TODO: Configure this URL
     ]
     
     result = subprocess.run(stac_cmd, capture_output=True, text=True, cwd="./poc")

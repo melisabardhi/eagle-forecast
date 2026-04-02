@@ -19,7 +19,6 @@ import requests
 import azure.identity
 import pandas as pd
 
-import utils
 from stac_item import create_raw_stac_item, create_postprocessed_stac_item, COLLECTION_ID
 
 
@@ -262,15 +261,17 @@ def ingest_forecast_stac_items(
         return {"status": "failed", "error": str(e)}
 
 
-def run(version: str, output_storage_url: str, geocatalog_url: str):
+def run(version: str, output_storage_url: str, geocatalog_url: str, collection_id: str = COLLECTION_ID):
     """Ingest STAC items for the current NRT cycle."""
-    ic_timestamp = utils.get_nrt_timestamp()
+    # Get current timestamp floored to 6-hour intervals, minus 6h latency
+    ic_timestamp = pd.Timestamp.now(tz="UTC").floor("6h") - pd.Timedelta("6h")
     
     return ingest_forecast_stac_items(
         ic_timestamp=ic_timestamp,
         version=version,
         output_storage_url=output_storage_url,
-        geocatalog_url=geocatalog_url
+        geocatalog_url=geocatalog_url,
+        collection_id=collection_id
     )
 
 
@@ -278,7 +279,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Ingest STAC Items for a Nested-EAGLE forecast into MPC Pro GeoCatalog"
     )
-    parser.add_argument("--config", required=True, help="Path to config YAML")
+    parser.add_argument("--version", required=True, 
+                        help="Pipeline version identifier")
+    parser.add_argument("--output-storage-url", required=True,
+                        help="Base URL for forecast data storage (e.g., https://mystorageaccount.blob.core.windows.net/forecasts)")
     parser.add_argument("--geocatalog-url", required=True, 
                         help="URL to your MPC Pro GeoCatalog (e.g., https://your-geocatalog.com)")
     parser.add_argument("--collection-id", default=COLLECTION_ID,
@@ -286,17 +290,11 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
-    config = utils.load_config(args.config)
-    version = config["version"]
-    output_storage_url = config.get(
-        "output_storage_url",
-        "https://STORAGE_ACCOUNT.blob.core.windows.net/nested-eagle-forecasts",
-    )
-    
     result = run(
-        version=version,
-        output_storage_url=output_storage_url,
-        geocatalog_url=args.geocatalog_url
+        version=args.version,
+        output_storage_url=args.output_storage_url,
+        geocatalog_url=args.geocatalog_url,
+        collection_id=args.collection_id
     )
     
     print(f"\nFinal result: {result}")
