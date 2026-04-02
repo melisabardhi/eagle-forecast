@@ -137,19 +137,7 @@ def postproc_component(
     if result.returncode != 0:
         raise RuntimeError(f"Post-processing failed: {result.stderr}")
     
-    # Step 2: Generate STAC items
-    stac_cmd = [
-        "python", "stac_item.py",
-        "--config", "nested_eagle.yaml",
-        "--input_path", str(final_outputs),
-        "--output_path", str(final_outputs)
-    ]
-    
-    result = subprocess.run(stac_cmd, capture_output=True, text=True, cwd="./poc")
-    if result.returncode != 0:
-        raise RuntimeError(f"STAC generation failed: {result.stderr}")
-    
-    # Step 3: Upload to blob storage
+    # Step 3: Upload to blob storage (data files must exist before STAC ingestion)
     upload_cmd = [
         "python", "upload.py", 
         "--config", "nested_eagle.yaml",
@@ -161,6 +149,18 @@ def postproc_component(
     result = subprocess.run(upload_cmd, capture_output=True, text=True, cwd="./poc")
     if result.returncode != 0:
         raise RuntimeError(f"Upload failed: {result.stderr}")
+    
+    # Step 4: Generate STAC items and ingest into GeoCatalog (references uploaded URLs)
+    # Note: Add geocatalog_url to your nested_eagle.yaml config file
+    stac_cmd = [
+        "python", "stac_ingestion.py",
+        "--config", "nested_eagle.yaml",
+        "--geocatalog-url", "https://your-geocatalog.com"  # TODO: Configure this
+    ]
+    
+    result = subprocess.run(stac_cmd, capture_output=True, text=True, cwd="./poc")
+    if result.returncode != 0:
+        raise RuntimeError(f"STAC ingestion failed: {result.stderr}")
 
 
 # Pipeline definition using components
