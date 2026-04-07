@@ -1,0 +1,62 @@
+# Azure Function ML Cluster Scaling Configuration
+# This file provides all the configuration needed to deploy an Azure Function
+# that automatically scales ML compute clusters on a schedule.
+
+# Required: Azure ML workspace details
+# Note: subscription-id is optional if you're logged in with 'az login'
+subscription-id: "your-azure-subscription-id-here"  # Optional - auto-detected if not specified
+ml-resource-group: "your-ml-resource-group"         # Required
+ml-workspace: "your-ml-workspace-name"              # Required
+
+# Cluster scaling configuration
+clusters:
+  # Option 1: List format
+  - "eagle-cpu"
+  - "eagle-gpu-h100"
+  # Option 2: Single string (uncomment to use)
+  # clusters: "eagle-cpu,eagle-gpu-h100"
+
+# Scheduling (all times in UTC)
+scale-up: "08:00"      # Scale clusters to min=1 at 8:00 AM UTC
+scale-down: "18:00"    # Scale clusters to min=0 at 6:00 PM UTC (optional)
+weekdays-only: true    # Only scale on Monday-Friday
+all-days: false        # Set to true to scale every day
+
+# Azure Function App settings
+function-resource-group: "eagle-functions-rg"
+function-name: "eagle-cluster-scaler"
+storage-account: "eaglefunctionstorage"
+location: "East US"
+
+# Examples of different scheduling patterns:
+
+# Example 1: Business hours scaling (default above)
+# scale-up: "08:00"
+# scale-down: "18:00"
+# weekdays-only: true
+
+# Example 2: Early morning scaling with no scale-down (24/7 availability)
+# scale-up: "06:00"
+# # scale-down: null  # Don't include scale-down to leave clusters running
+# weekdays-only: false
+# all-days: true
+
+# Example 3: Custom business schedule
+# scale-up: "07:30"
+# scale-down: "19:30"
+# weekdays-only: true
+
+# Example 4: Weekend-only processing
+# scale-up: "09:00"
+# scale-down: "17:00"
+# weekdays-only: false
+# # Note: You would need to manually specify Saturday/Sunday in a custom cron
+
+# Example 5: Different clusters for different purposes
+# clusters:
+#   - "training-cluster"
+#   - "inference-cluster"
+#   - "batch-processing-cluster"
+
+# Note: Command line arguments will override these values if provided
+# For example: python setup_scheduled_scaling.py --config schedule.yml --scale-up "07:00"

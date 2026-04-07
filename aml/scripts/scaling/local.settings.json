@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "AZURE_SUBSCRIPTION_ID": "<YOUR_SUBSCRIPTION_ID>",
+    "AZURE_RESOURCE_GROUP": "<YOUR_RESOURCE_GROUP>",
+    "AZURE_ML_WORKSPACE_NAME": "<YOUR_WORKSPACE_NAME>",
+    "CPU_CLUSTER_NAME": "eagle-cpu",
+    "GPU_CLUSTER_NAME": "eagle-gpu-h100"
+  }
+}

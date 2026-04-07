@@ -1,0 +1,7 @@
+# Azure SDK for Python deployment script
+azure-mgmt-web>=7.0.0
+azure-mgmt-storage>=21.0.0
+azure-mgmt-resource>=23.0.0
+azure-mgmt-authorization>=4.0.0
+azure-identity>=1.15.0
+pyyaml>=6.0
