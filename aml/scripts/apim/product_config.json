@@ -1,0 +1,20 @@
+[
+    {
+        "name": "basic",
+        "display_name": "Basic Tier",
+        "allowed_collections": "sentinel-2-l2a",
+        "description": "Basic access to Sentinel-2 L2A data only"
+    },
+    {
+        "name": "premium", 
+        "display_name": "Premium Tier",
+        "allowed_collections": "sentinel-2-l2a,landsat-8-c2-l2,sentinel-1-grd",
+        "description": "Premium access to Sentinel-2, Landsat-8, and Sentinel-1 data"
+    },
+    {
+        "name": "enterprise",
+        "display_name": "Enterprise Tier", 
+        "allowed_collections": "sentinel-2-l2a,landsat-8-c2-l2,sentinel-1-grd,modis-terra,modis-aqua",
+        "description": "Enterprise access to all satellite collections including MODIS"
+    }
+]

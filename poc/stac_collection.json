@@ -1,0 +1,90 @@
+{
+  "type": "Collection",
+  "stac_version": "1.0.0",
+  "id": "noaa-nested-eagle",
+  "title": "NOAA Nested-EAGLE Weather Forecasts",
+  "description": "AI weather forecasts from the Nested-EAGLE model (ECMWF Anemoi framework). Produces 240-hour (10-day) forecasts every 6 hours by nesting a high-resolution HRRR grid (6km, CONUS) inside a global GFS grid (0.25°). Each forecast cycle produces both a raw (full nested grid) output and post-processed outputs split into global and CONUS regional files.",
+  "license": "CC-BY-4.0",
+  "keywords": [
+    "weather",
+    "forecast",
+    "AI",
+    "NOAA",
+    "EAGLE",
+    "HRRR",
+    "GFS",
+    "CONUS",
+    "global"
+  ],
+  "providers": [
+    {
+      "name": "NOAA/EPIC",
+      "roles": ["producer"],
+      "url": "https://epic.noaa.gov/"
+    },
+    {
+      "name": "Microsoft Planetary Computer",
+      "roles": ["host"],
+      "url": "https://planetarycomputer.microsoft.com/"
+    }
+  ],
+  "extent": {
+    "spatial": {
+      "bbox": [[-180.0, -90.0, 180.0, 90.0]]
+    },
+    "temporal": {
+      "interval": [["2026-04-01T00:00:00Z", null]]
+    }
+  },
+  "summaries": {
+    "nested-eagle:output_type": ["raw", "postprocessed"],
+    "nested-eagle:variables": [
+      "geopotential",
+      "temperature",
+      "u_component_of_wind",
+      "v_component_of_wind",
+      "specific_humidity",
+      "10m_u_component_of_wind",
+      "10m_v_component_of_wind",
+      "2m_temperature",
+      "mean_sea_level_pressure",
+      "total_column_water_vapour",
+      "surface_pressure",
+      "total_precipitation_6hr",
+      "100m_u_component_of_wind",
+      "100m_v_component_of_wind"
+    ],
+    "nested-eagle:pressure_levels": [50, 100, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925, 1000],
+    "nested-eagle:global_resolution_deg": [0.25],
+    "nested-eagle:conus_resolution_km": [6],
+    "forecast:horizon": ["PT240H"],
+    "forecast:step_hours": [6]
+  },
+  "item_assets": {
+    "forecast": {
+      "type": "application/netcdf",
+      "title": "Raw Forecast (full nested grid)",
+      "roles": ["data"],
+      "description": "Full model output with nested global + CONUS grid"
+    },
+    "global": {
+      "type": "application/netcdf",
+      "title": "Global Forecast (GFS grid, 0.25°)",
+      "roles": ["data"],
+      "description": "Post-processed global forecast on GFS 0.25° grid"
+    },
+    "conus": {
+      "type": "application/netcdf",
+      "title": "CONUS Forecast (HRRR grid, 6km)",
+      "roles": ["data"],
+      "description": "Post-processed CONUS regional forecast on HRRR 6km grid"
+    }
+  },
+  "links": [
+    {
+      "rel": "self",
+      "href": "./collection.json",
+      "type": "application/json"
+    }
+  ]
+}
