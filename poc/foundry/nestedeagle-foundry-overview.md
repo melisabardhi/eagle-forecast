@@ -13,8 +13,8 @@ Share publisher details with Microsoft partner POC:
 Skip marketplace integration step entirely.
 
 **References:**
-- [publisher-self-serve/1.share-publisher-details.md](publisher-self-serve/1.share-publisher-details.md)
-- [publisher-self-serve/3.2.manage-publisher-marketplace-integration-details.md](publisher-self-serve/3.2.manage-publisher-marketplace-integration-details.md)
+- [publisher-self-serve/1.share-publisher-details.md](https://github.com/Azure/azureai-model-onboarding-docs/blob/main/publisher-self-serve/1.share-publisher-details.md)
+- [publisher-self-serve/3.2.manage-publisher-marketplace-integration-details.md](https://github.com/Azure/azureai-model-onboarding-docs/blob/main/publisher-self-serve/3.2.manage-publisher-marketplace-integration-details.md)
 
 ## 2. Package and Register Assets
 
@@ -31,8 +31,8 @@ Skip marketplace integration step entirely.
 Register both in Azure ML registry.
 
 **References:**
-- [publisher-self-serve/4.0.register-and-upload-model-assets.md](publisher-self-serve/4.0.register-and-upload-model-assets.md)
-- [publisher-self-serve/5.1.1.maap-byoc-model-deployment.md](publisher-self-serve/5.1.1.maap-byoc-model-deployment.md)
+- [publisher-self-serve/4.0.register-and-upload-model-assets.md](https://github.com/Azure/azureai-model-onboarding-docs/blob/main/publisher-self-serve/4.0.register-and-upload-model-assets.md)
+- [publisher-self-serve/5.1.1.maap-byoc-model-deployment.md](https://github.com/Azure/azureai-model-onboarding-docs/blob/main/publisher-self-serve/5.1.1.maap-byoc-model-deployment.md)
 
 ## 3. Define Runtime Contract with Deployment Template
 
@@ -48,7 +48,7 @@ Create deployment template YAML specifying:
 Deploy template to registry.
 
 **Reference:**
-- [publisher-self-serve/5.2.1.maap-deployment-template-creation.md](publisher-self-serve/5.2.1.maap-deployment-template-creation.md)
+- [publisher-self-serve/5.2.1.maap-deployment-template-creation.md](https://github.com/Azure/azureai-model-onboarding-docs/blob/main/publisher-self-serve/5.2.1.maap-deployment-template-creation.md)
 
 ## 4. Create Release Candidate
 
@@ -63,7 +63,7 @@ Create candidate.yaml with:
 Run CLI: `az ml modelpublisher release-candidate create -p <publisher> -m <model> -f candidate.yaml`
 
 **Reference:**
-- [publisher-self-serve/5.1.create-release-candidate-maap.md](publisher-self-serve/5.1.create-release-candidate-maap.md)
+- [publisher-self-serve/5.1.create-release-candidate-maap.md](https://github.com/Azure/azureai-model-onboarding-docs/blob/main/publisher-self-serve/5.1.create-release-candidate-maap.md)
 
 ## 5. Platform Validates Release Candidate
 
@@ -76,7 +76,7 @@ Automatic validations run:
 Expected timeline: 5–6 days for RC validation.
 
 **Reference:**
-- [publisher-self-serve/6.validations.md](publisher-self-serve/6.validations.md)
+- [publisher-self-serve/6.validations.md](https://github.com/Azure/azureai-model-onboarding-docs/blob/main/publisher-self-serve/6.validations.md)
 
 ## 6. Approval and Production Promotion
 
@@ -89,8 +89,8 @@ Run: `az ml modelpublisher release-candidate promote-to-prod -p <publisher> -m <
 Model is now in Azure AI Foundry catalog for consumers.
 
 **References:**
-- [publisher-self-serve/7.approval-flow.md](publisher-self-serve/7.approval-flow.md)
-- [publisher-self-serve/8.promote-to-production.md](publisher-self-serve/8.promote-to-production.md)
+- [publisher-self-serve/7.approval-flow.md](https://github.com/Azure/azureai-model-onboarding-docs/blob/main/publisher-self-serve/7.approval-flow.md)
+- [publisher-self-serve/8.promote-to-production.md](https://github.com/Azure/azureai-model-onboarding-docs/blob/main/publisher-self-serve/8.promote-to-production.md)
 
 ## How Nested Eagle Runs After Published
 
