@@ -33,6 +33,7 @@ Register both in Azure ML registry.
 **References:**
 - [publisher-self-serve/4.0.register-and-upload-model-assets.md](https://github.com/Azure/azureai-model-onboarding-docs/blob/main/publisher-self-serve/4.0.register-and-upload-model-assets.md)
 - [publisher-self-serve/5.1.1.maap-byoc-model-deployment.md](https://github.com/Azure/azureai-model-onboarding-docs/blob/main/publisher-self-serve/5.1.1.maap-byoc-model-deployment.md)
+- [container/best_practices.md](https://github.com/Azure/azureai-model-onboarding-docs/blob/main/container/best_practices.md)
 
 ## 3. Define Runtime Contract with Deployment Template
 
