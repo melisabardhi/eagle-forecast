@@ -1,0 +1,7 @@
+modelAssetReference: "azureml://registries/<registry-name>/models/<model-name>/versions/<model-version>"
+deploymentTemplateReference: "azureml://registries/<registry-name>/deploymenttemplates/nested-eagle-online-template/versions/1"
+deploymentType: "MaaP"
+sku: "Standard_NC24ads_A100_v4"
+inferencePath: "/score"
+inferencePayload: '{"lead_time": 240, "version": "nested_eagle", "ic_timestamp": "2026-05-12T00:00:00Z", "output_storage_account": "<consumer-storage-account>", "output_container": "<consumer-container>", "output_blob_prefix": "nested-eagle/test-run"}'
+inferenceResponse: '{"status": "ok", "version": "nested_eagle"}'

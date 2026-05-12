@@ -1,0 +1,54 @@
+$schema: https://azuremlschemas.azureedge.net/latest/deploymentTemplate.schema.json
+name: nested-eagle-online-template
+version: 1
+description: "Deployment template for Nested Eagle online inference"
+type: Managed
+deployment_template_type: online
+
+# Update registry/env reference
+environment: azureml://registries/<registry-name>/environments/<environment-name>/versions/<version>
+
+environment_variables:
+  # Must resolve to your mounted model assets root
+  AZUREML_MODEL_DIR: "/var/azureml-app/nested-eagle-model"
+  ENABLE_INFERENCESERVER_DIAGNOSTICSLOG_AML_VISIBILITY: "true"
+
+  # Scoring server defaults (override per consumer request body when needed)
+  DEFAULT_VERSION: "nested_eagle"
+  DEFAULT_FREQ: "6h"
+  OUTPUT_ROOT: "/tmp/nested-eagle-output"
+
+request_settings:
+  request_timeout_ms: 180000
+  max_concurrent_requests_per_instance: 1
+
+liveness_probe:
+  initial_delay: 300
+  period: 30
+  timeout: 5
+  failure_threshold: 10
+  success_threshold: 1
+  scheme: http
+  method: GET
+  path: "/health"
+  port: 8000
+
+readiness_probe:
+  initial_delay: 120
+  period: 15
+  timeout: 5
+  failure_threshold: 10
+  success_threshold: 1
+  scheme: http
+  method: GET
+  path: "/health"
+  port: 8000
+
+allowed_instance_types: "Standard_NC24ads_A100_v4 Standard_NC48ads_A100_v4"
+model_mount_path: "/var/azureml-app"
+
+scoring_port: 8000
+scoring_path: "/score"
+
+default_instance_type: "Standard_NC24ads_A100_v4"
+instance_count: 1
